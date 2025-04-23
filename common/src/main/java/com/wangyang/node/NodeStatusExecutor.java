@@ -1,6 +1,7 @@
 package com.wangyang.node;
 
 import com.wangyang.SentyBuild;
+import com.wangyang.common.bean.SentyConfig;
 import com.wangyang.node.base.YarnStatusV1;
 
 import java.text.SimpleDateFormat;
@@ -15,6 +16,7 @@ import java.util.concurrent.*;
  */
 public class NodeStatusExecutor {
 
+    //运行调度任务的线程池
     public static ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(2);
 
     //存放定时任务的回掉指针，需要的时候可以在暂停任务
@@ -27,7 +29,7 @@ public class NodeStatusExecutor {
         //yarn的节点状态心跳同步
         ScheduledFuture<?> rmSF = scheduler.scheduleWithFixedDelay(() -> {
             YarnStatusV1.rm();
-        }, (long) SentyBuild.getConf("senty.status.syn.time"), (long) SentyBuild.getConf("senty.status.syn.time"), TimeUnit.SECONDS);
+        }, (long) SentyConfig.getConf("senty.status.syn.time"), (long) SentyConfig.getConf("senty.status.syn.time"), TimeUnit.SECONDS);
 
         runSenties.put("rmSF",rmSF);
 

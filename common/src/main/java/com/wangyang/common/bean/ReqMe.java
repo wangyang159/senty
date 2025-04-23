@@ -5,7 +5,4 @@ package com.wangyang.common.bean;
  */
 public enum ReqMe {
     POST,GET;
-
-    private ReqMe() {
-    }
 }

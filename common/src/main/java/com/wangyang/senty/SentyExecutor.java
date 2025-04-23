@@ -1,6 +1,7 @@
 package com.wangyang.senty;
 
 import com.wangyang.SentyBuild;
+import com.wangyang.common.bean.SentyConfig;
 import com.wangyang.senty.base.YarnSentyV1;
 
 import java.text.SimpleDateFormat;
@@ -24,7 +25,7 @@ public class SentyExecutor {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         //根据不同的哨兵类型决定启动哪些哨兵
-        String[] sentyClass = ( (String) SentyBuild.getConf("senty.class") ).split(",");
+        String[] sentyClass = ( (String) SentyConfig.getConf("senty.class") ).split(",");
 
         for ( String s : sentyClass ){
             switch (s){
@@ -32,7 +33,7 @@ public class SentyExecutor {
                     //yarn的集群消息监控
                     ScheduledFuture<?> aboutSF = scheduler.scheduleWithFixedDelay(() -> {
                         YarnSentyV1.about();
-                    }, 0, (long) SentyBuild.getConf("senty.con.ratetime.resourcemanager.about"), TimeUnit.SECONDS);
+                    }, 0, (long) SentyConfig.getConf("senty.con.ratetime.resourcemanager.about"), TimeUnit.SECONDS);
 
                     runSenties.put("aboutSF",aboutSF);
 
@@ -43,7 +44,7 @@ public class SentyExecutor {
                     //yarn的队列消息监控
                     ScheduledFuture<?> metricsSF = scheduler.scheduleWithFixedDelay(() -> {
                         YarnSentyV1.metrics();
-                    }, 0, (long) SentyBuild.getConf("senty.con.ratetime.resourcemanager.metrics"), TimeUnit.SECONDS);
+                    }, 0, (long) SentyConfig.getConf("senty.con.ratetime.resourcemanager.metrics"), TimeUnit.SECONDS);
 
                     runSenties.put("metricsSF",metricsSF);
 

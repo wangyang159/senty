@@ -3,6 +3,7 @@ package com.wangyang.common.utils;
 import com.wangyang.SentyBuild;
 import com.wangyang.common.bean.ReqMe;
 import com.wangyang.common.bean.Result;
+import com.wangyang.common.bean.SentyConfig;
 
 import javax.net.ssl.*;
 import java.io.*;
@@ -142,7 +143,7 @@ public class FromUtils {
             }
 
             // 设置连接超时时间
-            conn.setConnectTimeout( (int) SentyBuild.getConf("senty.con.timeout"));
+            conn.setConnectTimeout( (int) SentyConfig.getConf("senty.con.timeout"));
             //读取响应吗，至于响应的数据会是一个json
             int responseCode = conn.getResponseCode();
 
@@ -180,7 +181,7 @@ public class FromUtils {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
             //当请求发生异常的时候根据保障保障模式做出对应的决策
-            int i = Integer.parseInt((String) SentyBuild.getConf("senty.safe.mode"));
+            int i = Integer.parseInt((String) SentyConfig.getConf("senty.safe.mode"));
             if (i==1){
                 //默认的 1 不做任何处理，视为放弃本次调度的数据
                 result.setCode(900);
@@ -344,7 +345,7 @@ public class FromUtils {
     public static Result statusSyn(String key){
         //准备返回对象、取出要更新的服务url并分隔节点、一个stringshuffer
         Result result = new Result();
-        String value = (String) SentyBuild.getConf(key);
+        String value = (String) SentyConfig.getConf(key);
         String[] hpArr = value.split(",");
         String[] hp = null;
 
@@ -353,7 +354,7 @@ public class FromUtils {
             try {
                 Socket socket = new Socket();
                 //socket.connect(new InetSocketAddress(hp[0], Integer.parseInt(hp[1])),3000);
-                socket.connect(new InetSocketAddress(hp[0], Integer.parseInt(hp[1])), (int) SentyBuild.getConf("senty.status.syn.timeout"));
+                socket.connect(new InetSocketAddress(hp[0], Integer.parseInt(hp[1])), (int) SentyConfig.getConf("senty.status.syn.timeout"));
                 socket.close();
 
                 //如果connect没有触发超时异常，且执行到第一顺位的心跳就是可用的，此时什么也不会发生，则返回300
@@ -374,7 +375,7 @@ public class FromUtils {
                             stringBuffer.append(hpArr[j]);
                         }
                     }
-                    SentyBuild.setConf(key,stringBuffer.toString());
+                    SentyConfig.setConf(key,stringBuffer.toString());
                     return result;
                 }
             } catch (Exception e) {

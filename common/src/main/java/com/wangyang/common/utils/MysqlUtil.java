@@ -1,6 +1,7 @@
 package com.wangyang.common.utils;
 
 import com.wangyang.SentyBuild;
+import com.wangyang.common.bean.SentyConfig;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
@@ -19,13 +20,13 @@ public class MysqlUtil {
      */
     public static void build(){
         HikariConfig config = new HikariConfig();
-        config.setJdbcUrl((String) SentyBuild.getConf("databases.url"));
-        config.setUsername((String) SentyBuild.getConf("databases.user"));
-        config.setPassword((String) SentyBuild.getConf("databases.password"));
-        config.setMaximumPoolSize((int) SentyBuild.getConf("hikari.pool.maxsize")); // 设置最大连接数
-        config.setMinimumIdle((int) SentyBuild.getConf("hikari.pool.minidle")); // 设置最小空闲连接数
-        config.setIdleTimeout((long) SentyBuild.getConf("hikari.pool.idle.timeout")); // 设置空闲连接超时时间
-        config.setMaxLifetime((long) SentyBuild.getConf("hikari.pool.max.lifetime")); // 设置连接最大存活时间
+        config.setJdbcUrl((String) SentyConfig.getConf("databases.url"));
+        config.setUsername((String) SentyConfig.getConf("databases.user"));
+        config.setPassword((String) SentyConfig.getConf("databases.password"));
+        config.setMaximumPoolSize((int) SentyConfig.getConf("hikari.pool.maxsize")); // 设置最大连接数
+        config.setMinimumIdle((int) SentyConfig.getConf("hikari.pool.minidle")); // 设置最小空闲连接数
+        config.setIdleTimeout((long) SentyConfig.getConf("hikari.pool.idle.timeout")); // 设置空闲连接超时时间
+        config.setMaxLifetime((long) SentyConfig.getConf("hikari.pool.max.lifetime")); // 设置连接最大存活时间
 
         dataSource = new HikariDataSource(config);
     }

@@ -2,6 +2,7 @@ package com.wangyang.node.base;
 
 import com.wangyang.SentyBuild;
 import com.wangyang.common.bean.Result;
+import com.wangyang.common.bean.SentyConfig;
 import com.wangyang.common.utils.FromUtils;
 
 import java.text.SimpleDateFormat;
@@ -25,10 +26,10 @@ public class YarnStatusV1 {
             StringBuilder stringBuilder = new StringBuilder();
 
             String aboutUrl = stringBuilder.delete(0,stringBuilder.length()).append("http://").append(hp[0]).append(":").append(hp[1]).append("/ws/v1/cluster").toString();
-            SentyBuild.setConf("hadoop.resourcemaneger.url.about",aboutUrl);
+            SentyConfig.setConf("hadoop.resourcemaneger.url.about",aboutUrl);
 
             String metricsUrl = stringBuilder.delete(0,stringBuilder.length()).append("http://").append(hp[0]).append(":").append(hp[1]).append("/ws/v1/cluster/metrics").toString();
-            SentyBuild.setConf("hadoop.resourcemaneger.url.metrics",metricsUrl);
+            SentyConfig.setConf("hadoop.resourcemaneger.url.metrics",metricsUrl);
 
         }else if (result.getCode()==300){
             //不做任何操作

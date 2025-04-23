@@ -10,7 +10,7 @@
     <version>1.0</version>
     <modules>
         <module>common</module>
-        <module>senty</module>
+        <module>sentybuild</module>
     </modules>
 
 </project>

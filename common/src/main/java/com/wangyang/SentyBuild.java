@@ -1,6 +1,7 @@
 package com.wangyang;
 
 import com.wangyang.common.bean.SentyClass;
+import com.wangyang.common.bean.SentyConfig;
 import com.wangyang.common.utils.MysqlUtil;
 import com.wangyang.node.NodeStatusExecutor;
 import com.wangyang.senty.SentyExecutor;
@@ -28,30 +29,13 @@ import java.util.regex.Pattern;
  * 保障书写的复用符号等可以被正常解析
  */
 public class SentyBuild {
-    //装载配置的map集合，采用线程安全的map集合，因为后面会有变动的需求，比如心跳程序和保障模式2下的哨兵
-    private static Map<String,Object> configs = new ConcurrentHashMap<String, Object>(25);
-
-    /**
-     * 获取配置，主键类型是string，具体的值需要使用时强转
-     */
-    public static Object getConf(String key){
-        return configs.get(key);
-    }
-
-    /**
-     * 更新配置
-     * @param key-value
-     */
-    public static void setConf(String key,Object value){
-        configs.put(key,value);
-    }
 
     public static void main(String[] args) {
         //程序入口字符串处理用的 buffer和时间格式化对象
         StringBuilder stringBuilder = new StringBuilder("");
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-        //从程序配置中获取日志，并加载用于后面解析
+        //从程序参数中获取配置，加载用于后面解析
         String confdir = System.getProperty("conf.dir");
         System.out.println(stringBuilder.delete(0,stringBuilder.length())
                 .append(simpleDateFormat.format(new Date()))
@@ -75,10 +59,10 @@ public class SentyBuild {
             //properties = new Configurations().properties(confdir + File.separator + "clustersentinel.properties");
 
             //苹果电脑测试开发
-            //properties = new Configurations().properties("/Users/dxm/Downloads/clustersentinel/common/src/main/resources/clustersentinel.properties");
+            properties = new Configurations().properties("/Users/dxm/Desktop/senty/common/src/main/resources/clustersentinel.properties");
 
             //win电脑测试开发
-            properties = new Configurations().properties("C:\\Users\\wang\\Desktop\\clustersentinel\\common\\src\\main\\resources\\clustersentinel.properties");
+            //properties = new Configurations().properties("C:\\Users\\wang\\Desktop\\clustersentinel\\common\\src\\main\\resources\\clustersentinel.properties");
         } catch (ConfigurationException e) {
             System.err.println(stringBuilder.delete(0,stringBuilder.length())
                             .append(simpleDateFormat.format(new Date()))
@@ -132,10 +116,10 @@ public class SentyBuild {
                             //校验顺利执行不触发异常，那么在校验第一个rm服务时将对应的服务接口路径装载到配置集合中
                             if( i == 0 ){
                                 String aboutUrl = stringBuilder.delete(0,stringBuilder.length()).append("http://").append(rmsp[0]).append(":").append(rmsp[1]).append("/ws/v1/cluster").toString();
-                                configs.put("hadoop.resourcemaneger.url.about",aboutUrl);
+                                SentyConfig.setConf("hadoop.resourcemaneger.url.about",aboutUrl);
 
                                 String metricsUrl = stringBuilder.delete(0,stringBuilder.length()).append("http://").append(rmsp[0]).append(":").append(rmsp[1]).append("/ws/v1/cluster/metrics").toString();
-                                configs.put("hadoop.resourcemaneger.url.metrics",metricsUrl);
+                                SentyConfig.setConf("hadoop.resourcemaneger.url.metrics",metricsUrl);
                             }
 
                         }
@@ -170,7 +154,7 @@ public class SentyBuild {
                         System.exit(1);
                     }
                     //放入配置数据
-                    configs.put(key,value);
+                    SentyConfig.setConf(key,value);
                     break;
                 case "senty.con.timeout":
                     //哨兵的请求超时时间校验
@@ -184,7 +168,7 @@ public class SentyBuild {
                         System.exit(1);
                     }
                     //将value的数据类型转换为int类型
-                    configs.put(key, Integer.parseInt(value));
+                    SentyConfig.setConf(key, Integer.parseInt(value));
                     break;
                 case "senty.con.ratetime" :
                     //哨兵的请求调度时间校验
@@ -200,7 +184,7 @@ public class SentyBuild {
                         System.exit(1);
                     }
                     //将value的数据类型转换为long类型
-                    configs.put(tmpKey,Long.parseLong(value));
+                    SentyConfig.setConf(tmpKey,Long.parseLong(value));
                     tmpKey = null;
                     break;
                 case "senty.status.syn.timeout":
@@ -215,7 +199,7 @@ public class SentyBuild {
                         System.exit(1);
                     }
                     //将value的数据类型转换为int类型
-                    configs.put(key, Integer.parseInt(value));
+                    SentyConfig.setConf(key, Integer.parseInt(value));
                     break;
                 case "senty.status.syn.time":
                     //对各服务状态同步的心跳时间
@@ -229,8 +213,7 @@ public class SentyBuild {
                         System.exit(1);
                     }
                     //将value的数据类型转换为long类型
-//                    configs.put(key,Long.parseLong(value));
-                    configs.put(key,6L);
+                    SentyConfig.setConf(key,Long.parseLong(value));
                     break;
                 case "senty.class":
                     //哨兵类型
@@ -258,7 +241,7 @@ public class SentyBuild {
                             strings.add(s.trim().toUpperCase());
                         }
                     }
-                    configs.put(key,String.join(",",strings));
+                    SentyConfig.setConf(key,String.join(",",strings));
                     break;
                 case "senty.safe.mode":
                     //保障模式
@@ -272,7 +255,7 @@ public class SentyBuild {
                                 .toString());
                         System.exit(1);
                     }else {
-                        configs.put(key,value.trim());
+                        SentyConfig.setConf(key,value.trim());
                     }
                     break;
                 case "hikari.pool.maxsize":
@@ -287,7 +270,7 @@ public class SentyBuild {
                         System.exit(1);
                     }
                     //将value的数据类型转换为int类型
-                    configs.put(key, Integer.parseInt(value));
+                    SentyConfig.setConf(key, Integer.parseInt(value));
                     break;
                 case "hikari.pool.minidle":
                     //数据库连接池校验
@@ -301,7 +284,7 @@ public class SentyBuild {
                         System.exit(1);
                     }
                     //将value的数据类型转换为int类型
-                    configs.put(key, Integer.parseInt(value));
+                    SentyConfig.setConf(key, Integer.parseInt(value));
                     break;
                 case "hikari.pool.idle.timeout":
                     //数据库连接池校验
@@ -315,7 +298,7 @@ public class SentyBuild {
                         System.exit(1);
                     }
                     //将value的数据类型转换为long类型
-                    configs.put(key, Long.parseLong(value));
+                    SentyConfig.setConf(key, Long.parseLong(value));
                     break;
                 case "hikari.pool.max.lifetime":
                     //数据库连接池校验
@@ -330,11 +313,11 @@ public class SentyBuild {
                         System.exit(1);
                     }
                     //将value的数据类型转换为long类型
-                    configs.put(key, Long.parseLong(value));
+                    SentyConfig.setConf(key, Long.parseLong(value));
                     break;
                 default:
                     //其他的配置，比如数据库的连接配置等不做校验，以字符串装载
-                    configs.put(key, value);
+                    SentyConfig.setConf(key, value);
                     break;
             }
 
@@ -344,9 +327,9 @@ public class SentyBuild {
         stringBuilder.delete(0,stringBuilder.length())
                 .append(simpleDateFormat.format(new Date()))
                 .append(" ************* 配置文件加载成功 ****************\n");
-        Set<String> confKeys = configs.keySet();
+        Set<String> confKeys = SentyConfig.getKets();
         for ( String t : confKeys ){
-            stringBuilder.append(t).append(" : ").append(getConf(t)).append("\n");
+            stringBuilder.append(t).append(" : ").append(SentyConfig.getConf(t)).append("\n");
         }
         stringBuilder.append("\n")
                 .append(simpleDateFormat.format(new Date()))
